@@ -1,6 +1,6 @@
-import Message from "../models/message";
-import User from "../models/user";
-import ChatRoom from "../models/chatroom";
+import Message from "../models/message.js";
+import User from "../models/auth.js";
+import ChatRoom from "../models/chatroom.js";
 
 
 // TODO: send message
@@ -58,3 +58,7 @@ const getPreviousMessages = async (req,res) =>{
 
 
 // TODO: unsend a message
+
+
+
+export {sendMessage,getPreviousMessages};
