@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Chatroom from '../models/chatroom'
-import User from '../models/auth'
+import Chatroom from '../models/chatroom.js'
+import User from '../models/auth.js'
 
 // TODO: create chatroom
 
@@ -23,6 +23,8 @@ const createChatRoom = async(req,res) =>{
 
     try{
         await chatroom.save();
+        console.log("chatroom saved")
+        console.log(chatroom)
     }catch(err){
         return res.status(500).json({
             message:"Something went wrong"
