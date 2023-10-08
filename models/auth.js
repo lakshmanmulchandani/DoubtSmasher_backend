@@ -17,6 +17,10 @@ const userSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+  chatrooms: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Chatroom',
+  }],
 });
 
 export default mongoose.model("User", userSchema);
