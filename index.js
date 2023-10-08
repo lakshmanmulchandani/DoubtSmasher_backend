@@ -2,12 +2,18 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import userRoutes from "./routes/users.js";
+import chatroomRoutes from "./routes/chatroom.js";
+import messageRoutes from "./routes/message.js";
+import topicRoutes from "./routes/topic.js";
 const app = express();
 
 app.use(express.json({limit: "30mb", extended: true}));
 app.use(express.urlencoded({limit: "30mb", extended: true}));
 app.use(cors());
 app.use("/user", userRoutes);
+app.use("/chatroom", chatroomRoutes);
+app.use("/message", messageRoutes);
+app.use("/topic", topicRoutes);
 
 app.get("/", (req, res) => {
   res.send("This is an API");

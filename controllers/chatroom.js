@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import Chatroom from '../models/chatroom'
-import User from '../models/auth'
+import Chatroom from '../models/chatroom.js'
+import User from '../models/auth.js'
+import Topic from '../models/topic.js';
 
 // TODO: create chatroom
 
@@ -9,25 +10,54 @@ import User from '../models/auth'
 const createChatRoom = async(req,res) =>{
     const data = req.body;
     const userid = req.userId;
+    console.log(data, userid)
     if(!data || !data.name || !data.topics){
         return res.status(400).json({
             message: "Missing Fields"
         })
     }
+    const topicIds = []
+    // checking if topics exist
+    for(let i = 0 ; i < data.topics.length; i++){
+        const topic = data.topics[i]
+        const existingTopic = await Topic.findOne({name:topic})
+        if(!existingTopic){
+            console.log('creating new topic',topic)
+            const newtopic = new Topic({name:topic});
+            await newtopic.save();
+            topicIds.push(newtopic.id);
+            console.log("done")
+        }
+        else{
+            console.log("old topic",topic)
+            topicIds.push(existingTopic.id);
+        }
+    }
+
+    console.log(topicIds)
 
     const chatroom = new Chatroom({
         name:data.name,
-        topics:data.topics,
+        topics:topicIds,
         users:[userid],
+        owner:userid
     })
 
-    try{
+    // try{
         await chatroom.save();
-    }catch(err){
-        return res.status(500).json({
-            message:"Something went wrong"
+        console.log("chatroom saved")
+        console.log(chatroom) 
+        
+        await User.updateOne({_id:userid},{
+            $push:{
+                chatrooms: chatroom._id
+            }
         })
-    }
+    // }catch(err){
+    //     return res.status(500).json({
+    //         message:"Something went wrong"
+    //     })
+    // }
 
     return res.status(200).json({
         message: "Success",
@@ -76,11 +106,11 @@ const joinChatRoom = async(req,res) =>{
 
 const getChatrooms = async(req,res) =>{
     const userid = req.userId;
-    const chatrooms = await  User.findOne(userid).chatrooms;
+    const chatrooms = (await User.findOne(userid).populate('chatrooms')).chatrooms;
 
     return res.status(200).json({
         message: "Success",
-        chatrooms
+        chatrooms:chatrooms
     })
 }
 

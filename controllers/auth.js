@@ -17,14 +17,8 @@ export const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-
-    const newUser = await users.create({
-      name,
-      email,
-      password: hashedPassword,
-      passoutyear,
-      rollno,
-    });
+    console.log("hashed password: " + hashedPassword);
+    const newUser = await users.create({name, email, password: hashedPassword});
 
     const JWT_SECRET = "anything";
     const token = jwt.sign(
@@ -32,6 +26,7 @@ export const signup = async (req, res) => {
       JWT_SECRET,
       {expiresIn: "1h"}
     );
+
     res.status(201).json({result: newUser, token});
   } catch (error) {
     console.log(error);
@@ -41,11 +36,13 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const {email, password} = req.body;
+  console.log(email, password);
   try {
     const existinguser = await users.findOne({email});
     if (!existinguser) {
       return res.status(404).json({message: "User don't Exist."});
     }
+    console.log(existinguser);
 
     const isPasswordCrt = await bcrypt.compare(password, existinguser.password);
     if (!isPasswordCrt) {
@@ -55,9 +52,11 @@ export const login = async (req, res) => {
     const JWT_SECRET = "anything";
     const token = jwt.sign(
       {email: existinguser.email, id: existinguser._id},
-      JWT_SECRET,
+
+      process.env.JWT_SECRET || "secret",
       {expiresIn: "1h"}
     );
+    console.log(token);
     res.status(200).json({result: existinguser, token});
   } catch (error) {
     res.status(500).json("Something went worng...");

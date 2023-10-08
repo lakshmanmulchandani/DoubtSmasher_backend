@@ -1,11 +1,11 @@
-import {Router} from "express"
-import {createChatRoom,getChatrooms,joinChatRoom} from '../controllers/chatroom'
+import express from "express"
+import {createChatRoom,getChatrooms,joinChatRoom} from '../controllers/chatroom.js'
+import auth from '../middleware/auth.js'
+const router = express.Router()
 
-const router = new Router()
-
-router.post('createchatroom',createChatRoom)
-router.post('joinchatroom',joinChatRoom)
-router.post('getchatrooms',getChatrooms)
+router.post('/createchatroom',auth,createChatRoom)
+router.post('/joinchatroom',joinChatRoom)
+router.get('/getchatrooms',getChatrooms)
 
 
 export default router;
