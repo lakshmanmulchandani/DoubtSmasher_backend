@@ -70,32 +70,56 @@ const createChatRoom = async(req,res) =>{
 
 const joinChatRoom = async(req,res) =>{
     const userid = req.userId;
+    console.log(userid)
     const data = req.body;
+    console.log(data)
     if(!data || !data.chatroomid){
         return res.status(400).json({
             message: "Missing Fields"
         })
     }
-    try{
-        await Chatroom.updateOne(data.chatroomid, {
+    // try{
+        await Chatroom.updateOne({_id:data.chatroomid}, {
             $push: {
                 users: userid
             }
         })
-        await User.updateOne(userid,{
-            $push:{
-                chatrooms: chatroomid
-            }
-        })
-    }catch(err){
-        return res.status(500).json({
-            message:"Something went wrong"
-        })
-    }
+        try {
+            await User.updateOne(
+                { _id: userid },
+                {
+                    $push: {
+                        chatrooms: data.chatroomid
+                    }
+                }
+            );
+            console.log('Chatroom added successfully for user');
+        } catch (error) {
+            console.error('Error adding chatroom for user:', error);
+        }
+    // }catch(err){
+    //     return res.status(500).json({
+    //         message:"Something went wrong"
+    //     })
+    // }
 
     return res.status(200).json({
         message: "Success"
     })
+}
+
+const getRecommendations = async(req,res) =>{
+    // const userid = req.userId;
+    // const userTopics = ['dsa']
+    // const topicIds = await Topic.find({ name: { $in: userTopics } }, '_id');
+    // console.log(topicIds)
+    const chatrooms = (await Chatroom.find().populate('topics').limit(10))
+
+    return res.status(200).json({
+        message:"success",
+        chatrooms:chatrooms
+    })
+
 }
 
 // TODO: Exit User
@@ -106,8 +130,21 @@ const joinChatRoom = async(req,res) =>{
 
 const getChatrooms = async(req,res) =>{
     const userid = req.userId;
-    const chatrooms = (await User.findOne(userid).populate('chatrooms')).chatrooms;
-
+    const user = (await User.findOne({_id:userid}).populate({
+        path:"chatrooms",
+        populate:[
+        {
+            path:'users',
+            select: ['name','email']
+        },
+        {
+            path:'topics',
+            select:'name'
+        }
+    ]
+    }))
+    const chatrooms = user? user.chatrooms : [];
+    console.log(user)
     return res.status(200).json({
         message: "Success",
         chatrooms:chatrooms
@@ -116,4 +153,4 @@ const getChatrooms = async(req,res) =>{
 
 
 
-export {getChatrooms,createChatRoom,joinChatRoom};
+export {getChatrooms,createChatRoom,joinChatRoom,getRecommendations};

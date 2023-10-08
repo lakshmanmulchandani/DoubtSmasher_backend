@@ -47,7 +47,7 @@ const getPreviousMessages = async (req,res) =>{
 
     const messages = await Message.find({
         chatroom:chatroomid
-    })
+    }).populate(['sender'])
 
     return res.status(200).json({
         message:"success",
