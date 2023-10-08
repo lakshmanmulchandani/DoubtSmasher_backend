@@ -6,6 +6,9 @@ import chatroomRoutes from "./routes/chatroom.js";
 import messageRoutes from "./routes/message.js";
 import topicRoutes from "./routes/topic.js";
 
+import questionRoutes from "./routes/Questions.js";
+import answerRoutes from "./routes/Answers.js";
+
 import http from "http";
 import {Server} from "socket.io"
 import Message from "./models/message.js";
@@ -27,6 +30,10 @@ app.use("/user", userRoutes);
 app.use("/chatroom", chatroomRoutes);
 app.use("/message", messageRoutes);
 app.use("/topic", topicRoutes);
+
+app.use("/questions", questionRoutes);
+app.use("/answer", answerRoutes);
+
 
 
 io.on('connection', (socket) => {
@@ -60,6 +67,7 @@ io.on('connection', (socket) => {
     console.log('A user disconnected');
   });
 });
+
 
 app.get("/", (req, res) => {
   res.send("This is an API");
