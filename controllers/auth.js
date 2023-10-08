@@ -4,11 +4,9 @@ import bcrypt from "bcryptjs";
 import users from "../models/auth.js";
 
 export const signup = async (req, res) => {
-  const {name, email, password} = req.body;
+  const {name, email, password, passoutyear, rollno} = req.body;
 
   try {
-
-    console.log(name);
     if (!password) {
       return res.status(400).json({message: "Password is required."});
     }
@@ -19,7 +17,7 @@ export const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    console.log("hashed password: " + hashedPassword)
+    console.log("hashed password: " + hashedPassword);
     const newUser = await users.create({name, email, password: hashedPassword});
 
     const JWT_SECRET = "anything";
@@ -31,19 +29,20 @@ export const signup = async (req, res) => {
 
     res.status(201).json({result: newUser, token});
   } catch (error) {
+    console.log(error);
     res.status(500).json({message: "Something went wrong..."});
   }
 };
 
 export const login = async (req, res) => {
   const {email, password} = req.body;
-  console.log(email ,password)
+  console.log(email, password);
   try {
     const existinguser = await users.findOne({email:email});
     if (!existinguser) {
       return res.status(404).json({message: "User don't Exist."});
     }
-    console.log(existinguser)
+    console.log(existinguser);
 
     const isPasswordCrt = await bcrypt.compare(password, existinguser.password);
     if (!isPasswordCrt) {
@@ -57,7 +56,7 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET || 'secret',
       {expiresIn: "22h"}
     );
-    console.log(token)
+    console.log(token);
     res.status(200).json({result: existinguser, token});
   } catch (error) {
     res.status(500).json("Something went worng...");
