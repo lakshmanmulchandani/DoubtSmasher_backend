@@ -38,7 +38,7 @@ export const login = async (req, res) => {
   const {email, password} = req.body;
   console.log(email, password);
   try {
-    const existinguser = await users.findOne({email});
+    const existinguser = await users.findOne({email:email});
     if (!existinguser) {
       return res.status(404).json({message: "User don't Exist."});
     }
@@ -53,8 +53,8 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {email: existinguser.email, id: existinguser._id},
 
-      process.env.JWT_SECRET || "secret",
-      {expiresIn: "1h"}
+      process.env.JWT_SECRET || 'secret',
+      {expiresIn: "22h"}
     );
     console.log(token);
     res.status(200).json({result: existinguser, token});
