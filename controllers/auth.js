@@ -4,10 +4,9 @@ import bcrypt from "bcryptjs";
 import users from "../models/auth.js";
 
 export const signup = async (req, res) => {
-  const {name, email, password} = req.body;
+  const {name, email, password, passoutyear, rollno} = req.body;
 
   try {
-    console.log(name);
     if (!password) {
       return res.status(400).json({message: "Password is required."});
     }
@@ -18,7 +17,14 @@ export const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = await users.create({name, email, password: hashedPassword});
+
+    const newUser = await users.create({
+      name,
+      email,
+      password: hashedPassword,
+      passoutyear,
+      rollno,
+    });
 
     const JWT_SECRET = "anything";
     const token = jwt.sign(
@@ -28,6 +34,7 @@ export const signup = async (req, res) => {
     );
     res.status(201).json({result: newUser, token});
   } catch (error) {
+    console.log(error);
     res.status(500).json({message: "Something went wrong..."});
   }
 };
