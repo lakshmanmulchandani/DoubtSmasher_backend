@@ -6,12 +6,16 @@ import chatroomRoutes from "./routes/chatroom.js";
 import messageRoutes from "./routes/message.js";
 import topicRoutes from "./routes/topic.js";
 
+import interestRoutes from "./routes/interest.js";
+
+
 import questionRoutes from "./routes/Questions.js";
 import answerRoutes from "./routes/Answers.js";
 
 import http from "http";
 import {Server} from "socket.io"
 import Message from "./models/message.js";
+
 const app = express();
 
 const server = http.createServer(app);
@@ -30,6 +34,8 @@ app.use("/user", userRoutes);
 app.use("/chatroom", chatroomRoutes);
 app.use("/message", messageRoutes);
 app.use("/topic", topicRoutes);
+
+app.use("/interest", interestRoutes);
 
 app.use("/questions", questionRoutes);
 app.use("/answer", answerRoutes);
@@ -69,14 +75,15 @@ io.on('connection', (socket) => {
 });
 
 
+
 app.get("/", (req, res) => {
   res.send("This is an API");
 });
 
+
 // const username = mulchandanilakshman;
 // const password = Ph3T5DjYHQeQgF8g;
-const DATABASE_URL =
-  "mongodb+srv://mulchandanilakshman:Ph3T5DjYHQeQgF8g@cluster0.xdkndi7.mongodb.net/?retryWrites=true&w=majority";
+const DATABASE_URL =  "mongodb+srv://mulchandanilakshman:Ph3T5DjYHQeQgF8g@cluster0.xdkndi7.mongodb.net/?retryWrites=true&w=majority";
 
 const PORT = 5000;
 
