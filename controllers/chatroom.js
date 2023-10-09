@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Chatroom from '../models/chatroom.js'
 import User from '../models/auth.js'
+import Message from '../models/message.js';
 import Topic from '../models/topic.js';
 
 // TODO: create chatroom
@@ -78,6 +79,11 @@ const joinChatRoom = async(req,res) =>{
             message: "Missing Fields"
         })
     }
+    const userexist = await User.findOne({_id:userid},{chatrooms:data.chatroomid})
+    if(userexist) return res.status(400).json({
+        message: "chatroom already exists"
+    })
+    console.log(userexist)
     // try{
         await Chatroom.updateOne({_id:data.chatroomid}, {
             $push: {
@@ -109,11 +115,11 @@ const joinChatRoom = async(req,res) =>{
 }
 
 const getRecommendations = async(req,res) =>{
-    // const userid = req.userId;
+    const userid = req.userId;
     // const userTopics = ['dsa']
     // const topicIds = await Topic.find({ name: { $in: userTopics } }, '_id');
     // console.log(topicIds)
-    const chatrooms = (await Chatroom.find().populate('topics').limit(10))
+    const chatrooms = await Chatroom.find({ users: { $nin: [userid] } });
 
     return res.status(200).json({
         message:"success",
@@ -126,6 +132,18 @@ const getRecommendations = async(req,res) =>{
 
 
 // TODO: Get Chatrooms for user
+
+
+const getMostRecentMessage = async (chatroomId) => {
+    try {
+      const mostRecentMessage = await Message.findOne({ chatroom: chatroomId }).sort({ createdAt: -1 })
+        console.log(mostRecentMessage)
+      return mostRecentMessage;
+    } catch (error) {
+      console.error('Error finding most recent message:', error);
+      throw error;
+    }
+  };
 
 
 const getChatrooms = async(req,res) =>{
@@ -144,7 +162,13 @@ const getChatrooms = async(req,res) =>{
     ]
     }))
     const chatrooms = user? user.chatrooms : [];
-    console.log(user)
+    // const formattedchatrooms = [];
+    // for( let i=0; i<chatrooms.length; i++){
+    //     const chatroom = chatrooms[i];
+    //     const lastMessage = await getMostRecentMessage(chatroom._id);
+    //     formattedchatrooms.push({...chatroom,lastMessage:lastMessage ? lastMessage.content : ''}); 
+    // }
+    // console.log(formattedchatrooms)
     return res.status(200).json({
         message: "Success",
         chatrooms:chatrooms
