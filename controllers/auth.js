@@ -20,7 +20,7 @@ export const signup = async (req, res) => {
     console.log("hashed password: " + hashedPassword);
     const newUser = await users.create({name, email, password: hashedPassword});
 
-    const JWT_SECRET = "anything";
+    const JWT_SECRET = "secret";
     const token = jwt.sign(
       {email: newUser.email, id: newUser._id},
       JWT_SECRET,
@@ -49,7 +49,7 @@ export const login = async (req, res) => {
       return res.status(400).json({message: "Invalid credentials"});
     }
     // Jwt token is created and sent back to browser as a response in json format
-    const JWT_SECRET = "anything";
+    const JWT_SECRET = "secret";
     const token = jwt.sign(
       {email: existinguser.email, id: existinguser._id},
 

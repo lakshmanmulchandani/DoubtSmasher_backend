@@ -80,7 +80,7 @@ const joinChatRoom = async(req,res) =>{
         })
     }
     const userexist = await User.findOne({_id:userid},{chatrooms:data.chatroomid})
-    if(userexist) return res.status(400).json({
+    if(!userexist) return res.status(400).json({
         message: "chatroom already exists"
     })
     console.log(userexist)
