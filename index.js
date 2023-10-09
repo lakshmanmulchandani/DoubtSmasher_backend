@@ -83,7 +83,9 @@ app.get("/", (req, res) => {
 
 // const username = mulchandanilakshman;
 // const password = Ph3T5DjYHQeQgF8g;
-const DATABASE_URL =  "mongodb+srv://mulchandanilakshman:Ph3T5DjYHQeQgF8g@cluster0.xdkndi7.mongodb.net/?retryWrites=true&w=majority";
+
+const DATABASE_URL =
+  "mongodb+srv://mulchandanilakshman:Ph3T5DjYHQeQgF8g@cluster0.xdkndi7.mongodb.net/doubtsmasher?retryWrites=true&w=majority";
 
 const PORT = 5000;
 
